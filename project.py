@@ -252,12 +252,6 @@ def restaurantMenuJSON(restaurant_id):
     return jsonify(MenuItems=[i.serialize for i in items])
 
 
-@app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/JSON')
-def menuItemJSON(restaurant_id, menu_id):
-    Menu_Item = session.query(MenuItem).filter_by(id=menu_id).one()
-    return jsonify(Menu_Item=Menu_Item.serialize)
-
-
 @app.route('/restaurant/JSON')
 def restaurantsJSON():
     restaurants = session.query(Restaurant).all()
@@ -283,6 +277,7 @@ def showRestaurants():
 def newRestaurant():
     if 'username' not in login_session:
         return redirect('/login')
+    
     if request.method == 'POST':
         newRestaurant = Restaurant(
             name=request.form['name'], user_id=login_session['user_id'])
@@ -311,12 +306,16 @@ def editRestaurant(restaurant_id):
         </script>
         <body onload='myFunction()''>
       """
+    
+    
     if request.method == 'POST':
         if request.form['name']:
             editedRestaurant.name = request.form['name']
             flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
             return redirect(url_for('showRestaurants'))
+        
     else:
+        
         return render_template('editRestaurant.html', restaurant=editedRestaurant)
 
 
@@ -338,13 +337,17 @@ def deleteRestaurant(restaurant_id):
         </script>
         <body onload='myFunction()''>
        """
+    
+    
     if request.method == 'POST':
         session.delete(restaurantToDelete)
         flash('%s Successfully Deleted' % restaurantToDelete.name)
         session.commit()
         return redirect(url_for('showRestaurants', restaurant_id=restaurant_id))
+    
     else:
         return render_template('deleteRestaurant.html', restaurant=restaurantToDelete)
+    
 
 
 # Show a restaurant menu
@@ -357,13 +360,16 @@ def showMenu(restaurant_id):
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(
         restaurant_id=restaurant_id).all()
+    
     if 'username' not in login_session or creator.id != login_session['user_id']:
         return render_template('publicmenu.html', 
                                items=items, 
                                restaurant=restaurant, 
                                creator=creator
                               )
+    
     else:
+        
         return render_template('menu.html', 
                                items=items, 
                                restaurant=restaurant, 
@@ -389,6 +395,8 @@ def newMenuItem(restaurant_id):
          </script>
          <body onload='myFunction()''>
         """
+    
+    
         if request.method == 'POST':
             newItem = MenuItem(name=request.form['name'], 
                                description=request.form['description'], 
@@ -397,12 +405,15 @@ def newMenuItem(restaurant_id):
                                restaurant_id=restaurant_id, 
                                user_id=restaurant.user_id
                               )
+            
             session.add(newItem)
             session.commit()
             flash('New Menu %s Item Successfully Created' % (newItem.name))
             return redirect(url_for('showMenu', restaurant_id=restaurant_id))
-    else:
-        return render_template('newmenuitem.html', restaurant_id=restaurant_id)
+        
+        else:
+        
+           return render_template('newmenuitem.html', restaurant_id=restaurant_id)
 
 
 # Edit a menu item
@@ -424,6 +435,8 @@ def editMenuItem(restaurant_id, menu_id):
         </script>
         <body onload='myFunction()''>
        """
+    
+    
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -436,8 +449,11 @@ def editMenuItem(restaurant_id, menu_id):
         session.add(editedItem)
         session.commit()
         flash('Menu Item Successfully Edited')
+        
         return redirect(url_for('showMenu', restaurant_id=restaurant_id))
+    
     else:
+        
         return render_template('editmenuitem.html',
                                restaurant_id=restaurant_id, 
                                menu_id=menu_id, 
@@ -464,12 +480,16 @@ def deleteMenuItem(restaurant_id, menu_id):
         </script>
         <body onload='myFunction()''>
        """
+    
+    
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
         flash('Menu Item Successfully Deleted')
         return redirect(url_for('showMenu', restaurant_id=restaurant_id))
+    
     else:
+        
         return render_template('deleteMenuItem.html', item=itemToDelete)
 
 
