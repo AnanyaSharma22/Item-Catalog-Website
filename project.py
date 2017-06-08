@@ -292,7 +292,6 @@ def newRestaurant():
 # Edit a restaurant
 
 @app.route('/restaurant/<int:restaurant_id>/edit/', methods=['GET', 'POST'])
-@login_required
 def editRestaurant(restaurant_id):
     if 'username' not in login_session:
         return redirect('/login')
