@@ -90,6 +90,7 @@ def gconnect():
     # If there was an error in the access token info, abort.
     print 6
     if result.get('error') is not None:
+        print 8
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
         print 7
