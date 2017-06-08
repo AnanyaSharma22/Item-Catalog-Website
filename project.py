@@ -200,22 +200,27 @@ def getUserID(email):
 def gdisconnect():
     # Only disconnect a connected user.
 
-
+    print 1
     credentials = login_session.get('credentials')
     if credentials is None:
+        print 4
         response = make_response(
             json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
+        print 5
         return response
+    print 2
     access_token = credentials.access_token
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
+    print 3
     result = h.request(url, 'GET')[0]
     if result['status'] != '200':
         # For whatever reason, the given token was invalid.
-
+        print 6
         response = make_response(
             json.dumps('Failed to revoke token for given user.'), 400)
+            print 7
         response.headers['Content-Type'] = 'application/json'
         return response
 
